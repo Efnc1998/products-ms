@@ -1,9 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ProductRepository } from '../../domain/ports/product.repository';
-import { ProductsService } from '../../domain/ports/products.service';
+import { PaginationDto } from '@/shared';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { CreateProductDto } from '../../domain/dto/create-product.dto';
 import { UpdateProductDto } from '../../domain/dto/update-product.dto';
-import { PaginationDto } from '@/shared';
+import { ProductRepository } from '../../domain/ports/product.repository';
+import { ProductsService } from '../../domain/ports/products.service';
 
 @Injectable()
 export class ProductsServiceImpl implements ProductsService {
@@ -36,7 +37,10 @@ export class ProductsServiceImpl implements ProductsService {
     const product = await this.productRepository.findOne(id);
 
     if (!product) {
-      throw new NotFoundException(`Product with id #${id} not found`);
+      throw new RpcException({
+        message: `Product with id #${id} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     this.logger.log(`Product found: ${JSON.stringify(product)}`);
