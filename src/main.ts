@@ -5,17 +5,21 @@ import { envs } from './config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const logger = new Logger('Main');
+  const logger = new Logger('Products-MS');
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        port: envs.port,
+  const app = await NestFactory.create(AppModule);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: envs.kafkaBrokers,
+      },
+      consumer: {
+        groupId: 'products-consumer',
       },
     },
-  );
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -25,7 +29,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen();
+  await app.startAllMicroservices();
+  await app.listen(envs.port);
   logger.log(`Products microservice is running on port: ${envs.port}`);
 }
 bootstrap();

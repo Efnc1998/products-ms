@@ -44,4 +44,12 @@ export abstract class ProductRepository {
    * @returns The soft-deleted product entity
    */
   abstract remove(id: number): Promise<Product>;
+
+  /**
+   * Atomically adjusts stock by increment (positive = add, negative = decrement).
+   * @param id Product ID
+   * @param increment Quantity to add (use negative to subtract)
+   * @returns Updated product entity
+   */
+  abstract adjustStock(id: number, increment: number): Promise<Product>;
 }
