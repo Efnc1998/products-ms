@@ -81,7 +81,7 @@ export class InventoryService {
   /**
    * Libera stock previamente reservado (acción de compensación de la SAGA).
    */
-  async releaseInventory(event: InventoryReleaseEvent): Promise<void> {
+  releaseInventory(event: InventoryReleaseEvent): void {
     this.logger.log(`Liberando inventario para orden: ${event.orderId}`);
     // En un sistema real se consultaría los ítems de la orden en un cache o event store.
     // Para este demo, emitimos el evento de confirmación.
